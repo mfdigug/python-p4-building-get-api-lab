@@ -14,25 +14,39 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+
 @app.route('/')
 def index():
     return '<h1>Bakery GET API</h1>'
 
+
 @app.route('/bakeries')
 def bakeries():
-    return ''
+    bakeries = [bakery.to_dict() for bakery in Bakery.query.all()]
+    return make_response(jsonify(bakeries), 200)
+
 
 @app.route('/bakeries/<int:id>')
 def bakery_by_id(id):
-    return ''
+    bakery = Bakery.query.filter(Bakery.id == id).first()
+    bakery_dict = bakery.to_dict()
+    return make_response(jsonify(bakery_dict), 200)
+
 
 @app.route('/baked_goods/by_price')
 def baked_goods_by_price():
-    return ''
+    goods_by_price = [baked_good.to_dict(
+    ) for baked_good in BakedGood.query.order_by(BakedGood.price.desc()).all()]
+    return make_response(jsonify(goods_by_price), 200)
+
 
 @app.route('/baked_goods/most_expensive')
 def most_expensive_baked_good():
-    return ''
+    most_expensive = BakedGood.query.order_by(
+        BakedGood.price.desc()).first()
+    most_expensive_good = most_expensive.to_dict()
+    return make_response(jsonify(most_expensive_good), 200)
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
